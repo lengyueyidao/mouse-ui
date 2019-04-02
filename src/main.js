@@ -15,7 +15,7 @@ Vue.use(Antd);
 Vue.use(api);
 Vue.use(VueI18n);
 
-// 注册i18n实例并引入语言文件，文件格式等下解析
+// 注册i18n实例并引入语言文件
 const i18n = new VueI18n({
   locale: 'zh',
   messages: {

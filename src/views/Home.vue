@@ -3,13 +3,14 @@
     <h2>Home Page</h2>
     <a-button @click="getUserInfo()">获取用户信息</a-button>
     <a-button @click="getMenuInfo()">获取菜单信息</a-button>
+    <a-button @click="logout()">退出</a-button>
   </div>
 </template>
 
 <script>
 
   import mock from '@/mock/index.js'
-
+  
   export default {
     name: 'Home',
     methods: {
@@ -26,6 +27,10 @@
         }).catch(function(res) {
           alert(res);
         })
+      },
+      logout() {
+        sessionStorage.removeItem('token');
+        this.$router.push('/login');
       }
     }
   }

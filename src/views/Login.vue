@@ -7,7 +7,7 @@
           <a-menu-item key="en">English</a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px">
-        <a-icon type="down" />
+         <a-icon type="down" />
         </a-button>
       </a-dropdown>
     </div>
@@ -56,7 +56,7 @@
             'remember',
             {
               valuePropName: 'checked',
-              initialValue: true,
+              initialValue: false,
             }
           ]"
         >
@@ -94,8 +94,6 @@
 <script>
   
   import mock from '@/mock/index.js'
-  import Cookies from 'js-cookie'
-  import router from '@/router'
   
   export default {
     inject: ['reload'],
@@ -105,7 +103,7 @@
       }
     },
     mounted() {
-      
+      this.initLoginForm();
     },
     computed: {
       userName() {
@@ -129,12 +127,13 @@
           if (!err) {
             this.$api.login.login().then((res) => {
               if(values.remember) {
-                this.setCookie(values.userName, values.password, 1);
+                sessionStorage.setItem('userName', values.userName);
+                sessionStorage.setItem('password', values.password);
               } else {
-                this.clearCookie();
+                this.clearSession();
               }
-              Cookies.set('token', res.data.token);
-              router.push('/'); // 登录成功，跳转至主页
+              sessionStorage.setItem('token', res.data.token);
+              this.$router.push('/'); // 登录成功，跳转至主页
             }).catch((res) => {
               alert(res);
             })
@@ -145,20 +144,22 @@
       reset() {
         this.form.resetFields();
       },
-      //设置cookie
-      set(userName, password, exdays) {
-          Cookies.set("userName", userName, {expires: exdays});
-          Cookies.set("password", password, {expires: exdays});
-      },
-      //获取cookie
-      getCookie() {
-          let userName = Cookies.get("userName");
-          let password = Cookies.get("password");
+      //初始化LoginForm，获取session，填充用户名和密码
+      initLoginForm() {
+          let userName = sessionStorage.getItem('userName');
+          let password = sessionStorage.getItem('password');
           console.info(userName + "-" + password);
+          if(userName !== null && password !== null) {
+            this.form.setFieldsValue({
+              userName: userName,
+              password: password,
+              remember: true
+            });
+          }
       },
-      //删除cookie
-      clearCookie() {
-          this.setCookie("", "", -1); //修改2值都为空，天数为负1天就好了
+      //删除session
+      clearSession() {
+          sessionStorage.clear();
       },
       changeLanguage(obj) {
         console.log(obj.key);
